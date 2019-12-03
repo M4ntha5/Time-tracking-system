@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Mantas\\Documents\\Github\\New folder\\TimeTracking\\TimeTracking\\TimeTracking.csproj": {}
+    "C:\\Users\\Mantas\\Documents\\Github\\Time-tracking-system\\TimeTracking\\TimeTracking\\TimeTracking.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Mantas\\Documents\\Github\\New folder\\TimeTracking\\TimeTracking\\TimeTracking.csproj": {
+    "C:\\Users\\Mantas\\Documents\\Github\\Time-tracking-system\\TimeTracking\\TimeTracking\\TimeTracking.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mantas\\Documents\\Github\\New folder\\TimeTracking\\TimeTracking\\TimeTracking.csproj",
+        "projectUniqueName": "C:\\Users\\Mantas\\Documents\\Github\\Time-tracking-system\\TimeTracking\\TimeTracking\\TimeTracking.csproj",
         "projectName": "TimeTracking",
-        "projectPath": "C:\\Users\\Mantas\\Documents\\Github\\New folder\\TimeTracking\\TimeTracking\\TimeTracking.csproj",
+        "projectPath": "C:\\Users\\Mantas\\Documents\\Github\\Time-tracking-system\\TimeTracking\\TimeTracking\\TimeTracking.csproj",
         "packagesPath": "C:\\Users\\Mantas\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mantas\\Documents\\Github\\New folder\\TimeTracking\\TimeTracking\\obj\\",
+        "outputPath": "C:\\Users\\Mantas\\Documents\\Github\\Time-tracking-system\\TimeTracking\\TimeTracking\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Mantas\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -37,6 +37,28 @@
       },
       "frameworks": {
         "netcoreapp3.0": {
+          "dependencies": {
+            "NSubstitute": {
+              "target": "Package",
+              "version": "[4.2.1, )"
+            },
+            "NSubstitute.Analyzers.CSharp": {
+              "target": "Package",
+              "version": "[1.0.11, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[3.12.0, )"
+            },
+            "NUnit.Console": {
+              "target": "Package",
+              "version": "[3.10.0, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[3.15.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
