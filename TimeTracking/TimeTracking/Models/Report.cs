@@ -7,28 +7,15 @@ namespace TimeTracking.Models
 {
     public class Report
     {
-        //public List<Employee> Employees { get; set; } // gal but nereik nes project turi lista darbuotoju
-        public List<Project> Projects { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public DateTime Date { get; set; }
+        public List<Project> Project { get; set; }
+        public string Name { get; set; }        
+        public string Description { get; set; } 
 
-        public Report(List<Project> projects, string name, string description, DateTime date)
+        public Report(List<Project> project, string name, string description)
         {
-            Projects = projects;
+            Project = project;
             Name = name;
             Description = description;
-            Date = date;
-        }
-
-        public void GetReport(DateTime from, DateTime to)
-        {
-            List<Report> reports = new List<Report>();
-
-            if(this.Date >= from && this.Date <= to)
-            {
-                
-            }
         }
     }
 }

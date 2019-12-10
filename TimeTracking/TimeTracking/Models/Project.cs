@@ -9,15 +9,19 @@ namespace TimeTracking.Models
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public double Budget { get; set; }
-        public List<Employee> Employees { get; set; } //projektas turi daug emp
+        public TimeSpan Budget { get; set; }            //valandom tarkim 40 
+        public DateTime DateCreated { get; set; }
+        public List<Employee> Employees { get; set; }   //projektas gali turet daug emp
+        public List<Commit> Commits { get; set; }       //cia bus laikomi visi commitai siam projektui
 
         public Project(string name, string description, double budget, List<Employee> employees)
         {
             Name = name;
             Description = description;
-            Budget = budget;
+            Budget = TimeSpan.FromHours(budget);
+            DateCreated = DateTime.Now;
             Employees = employees;
+            Commits = new List<Commit>();
         }
     }
 }
