@@ -7,9 +7,10 @@ namespace TimeTracking.Models.Interfaces
 {
     public interface ITracker
     {
-        string StartWorkingOnProject(Employee employee, Project project);
-        string EndWorkingOnProject(Employee employee, Project project);
-        string CheckForOvertime(Employee employee);
-
+        void LogHours(Employee employee, Project project, TimeSpan hours, string description);
+        void LogHours(Employee employee, List<Project> projects, List<TimeSpan> hours, string description);
+        bool CheckForEmployeeOvertime(Employee employee);
+        bool CheckIfEmployeeCanWorkOnTheProject(Employee employee, Project project);
+        bool CheckIfProjectBudgetExceeded(Project project);
     }
 }
