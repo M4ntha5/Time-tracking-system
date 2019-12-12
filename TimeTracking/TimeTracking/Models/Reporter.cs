@@ -9,14 +9,7 @@ namespace TimeTracking.Models
 {
     public class Reporter : IReporter
     {
-        IReporterErrorChecker ErrorChecker;
-
-        public Reporter(IReporterErrorChecker errorChecker)
-        {
-            ErrorChecker = errorChecker;
-        }
-
-        public List<Project> SortProjects(DateTime dateFrom, DateTime dateTo, List<Project> projects)
+        public List<Project> SortProjects(DateTime? dateFrom, DateTime? dateTo, List<Project> projects)
         {
             List<Project> sortedProjects = new List<Project>();
             if (dateFrom == null)
@@ -53,34 +46,27 @@ namespace TimeTracking.Models
         }
 
 
-       /* public Report MakeReport(Project project)
+        public Report GetProjectDetails(Project project, Employee employee)
         {
-            //total time all employees worked on this project
-            TimeSpan totalEmpWorkTime = TimeSpan.Zero;
-
-            List<Employee> employees = project.Employees;
-
-            foreach (Employee employee in employees)
-            {
-                totalEmpWorkTime.Add(employee.TotalTime);
-            }
-
-            Report report = new Report()
-            return report;
-        }*/
-
-        //employee - darbuotojas kuris dabar bando pasiekti reportus
-        /*public Report GetReport(Project project, Employee employee)
-        {
-            if(!ErrorChecker.EmployeeIsManager(employee))
+            if(!CanEmployeeAccessReports(employee))
             {
                 throw new CantAccessReportsException();
             }
-            Report report = MakeReport(project);
+
+            Report report = new Report(
+                project, project.Name, project.Description,
+                project.DateCreated, project.Employees, project.Commits
+            );
 
             return report;
-        }*/
+        }
 
-      
+        public bool CanEmployeeAccessReports(Employee employee)
+        {
+            if (employee.Role == 2)
+                return true;
+            else 
+                return false;
+        }
     }
 }

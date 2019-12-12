@@ -10,47 +10,46 @@ namespace Testing
 {
     class ReporterTests
     {
-       /* Employee employee;
+        Employee employee;
         Employee employee2;
-        List<Employee> employees;
-        IReporterErrorChecker mock;
+        
         Project project;
         Reporter reporter;
+        IReporter mock;
 
         [SetUp]
         public void Setup()
         {
-            employee = new Employee("Mantas M", 1, 5, 1);
-            employee2 = new Employee("Jonas J", 2, 5, 1);
-            employees = new List<Employee>();
+            employee = new Employee("Mantas M", 160, 1);
+            employee2 = new Employee("Jonas J", 160, 2);
+
+            List<Employee> employees = new List<Employee>();
             employees.Add(employee);
             employees.Add(employee2);
 
-            mock = Substitute.For<IReporterErrorChecker>();
-            reporter = new Reporter(mock);
-            var projectDate = new DateTime(2019, 12, 1);
-            project = new Project("Test", "no desc", 5000, projectDate, employees);
+            mock = Substitute.For<IReporter>();
+            reporter = new Reporter();
+
+            project = new Project("Test", "no desc", 5000, employees);
         }
 
         [Test]
-        public void TestIfDeveloperCantAccessReports()
+        public void TestIfEmployeeCantAccessReports()
         {
-            mock.EmployeeIsManager(employee).Returns(false);
-            Assert.Throws<CantAccessReportsException>(() => reporter.GetReport(project, employee));
-
+            Assert.Throws<CantAccessReportsException>(
+                () => reporter.GetProjectDetails(project, employee));
         }
         [Test]
-        public void TestIfManagerCanAccessReports()
+        public void TestIfEmployeeCanAccessReports()
         {
-            mock.EmployeeIsManager(employee2).Returns(true);
+            mock.CanEmployeeAccessReports(employee).Returns(true);
 
-            var expected = new Report(project, employees, TimeSpan.Zero);
+            mock.GetProjectDetails(project, employee);
 
-            var actual = reporter.GetReport(project, employee2);
-
-            Assert.AreEqual(expected, actual);
-
+            Assert.AreEqual(true, mock.CanEmployeeAccessReports(employee));
+            mock.Received().GetProjectDetails(project, employee);
+             
         }
-        */
+
     }
 }

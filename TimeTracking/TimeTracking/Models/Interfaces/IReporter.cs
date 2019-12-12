@@ -7,7 +7,8 @@ namespace TimeTracking.Models.Interfaces
 {
     public interface IReporter
     {
-        List<Project> SortProjects(DateTime from, DateTime to, List<Project> projects);
-        //Report MakeReport(Project project);
+        List<Project> SortProjects(DateTime? from, DateTime? to, List<Project> projects);
+        Report GetProjectDetails(Project project, Employee employee);
+        bool CanEmployeeAccessReports(Employee employee);
     }
 }

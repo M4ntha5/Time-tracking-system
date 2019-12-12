@@ -7,15 +7,22 @@ namespace TimeTracking.Models
 {
     public class Report
     {
-        public List<Project> Project { get; set; }
-        public string Name { get; set; }        
-        public string Description { get; set; } 
+        public Project Project { get; set; }
+        public string ProjectName { get; set; }        
+        public string ProjectDescription { get; set; }
+        public DateTime DateCreated { get; set; }
+        public List<Employee> Employee { get; set; } // project empl
+        public List<Commit> Commits { get; set; }
 
-        public Report(List<Project> project, string name, string description)
+        public Report(Project project, string projectName, string projectDescription, 
+                        DateTime dateCreated, List<Employee> employee, List<Commit> commits)
         {
             Project = project;
-            Name = name;
-            Description = description;
+            ProjectName = projectName;
+            ProjectDescription = projectDescription;
+            DateCreated = dateCreated;
+            Employee = employee;
+            Commits = commits;
         }
     }
 }

@@ -12,5 +12,6 @@ namespace TimeTracking.Models.Interfaces
         bool CheckForEmployeeOvertime(Employee employee);
         bool CheckIfEmployeeCanWorkOnTheProject(Employee employee, Project project);
         bool CheckIfProjectBudgetExceeded(Project project);
+        bool CheckIfEmployeeWorkedMoreThenPossible(List<TimeSpan> hours);
     }
 }

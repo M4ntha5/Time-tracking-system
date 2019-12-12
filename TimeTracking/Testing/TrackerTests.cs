@@ -14,8 +14,13 @@ namespace Testing
         Employee employee2;
         List<Employee> employees;
         Project project;
+        Project project2;
         TimeTracker tracker;
         ITracker mock;
+        List<TimeSpan> TimeList;
+        List<TimeSpan> TimeListException;
+        List<Project> projects;
+        TimeSpan time;
 
         [SetUp]
         public void Setup()
@@ -30,16 +35,33 @@ namespace Testing
             tracker = new TimeTracker();
             
             project = new Project("Test", "no desc", 40, employees);
+            project2 = new Project("tes2", "d", 50, employees);
+            time = TimeSpan.FromHours(5);
+
+            TimeList = new List<TimeSpan>();
+            TimeList.Add(new TimeSpan(3, 5, 15));
+            TimeList.Add(new TimeSpan(8, 6, 3));
+
+            TimeListException = new List<TimeSpan>();
+            TimeListException.Add(new TimeSpan(3, 5, 15));
+            TimeListException.Add(new TimeSpan(8, 6, 3));
+            TimeListException.Add(new TimeSpan(8, 6, 3));
+
+
+            projects = new List<Project>();
+            projects.Add(project);
+            projects.Add(project2);
         }
 
         [Test]
         public void TestIfEmployeeCanLogHoursStartStop()
-        {
-            TimeSpan time = TimeSpan.FromHours(5);
+        {  
             mock = Substitute.For<ITracker>();
 
-            mock.LogHours(employee, project, time, "desc");       
+            mock.CheckIfEmployeeCanWorkOnTheProject(employee, project).Returns(true);
+            mock.LogHours(employee, project, time, "desc");
 
+            Assert.AreEqual(true, mock.CheckIfEmployeeCanWorkOnTheProject(employee, project));
             mock.Received().LogHours(employee, project, time, "desc");
 
         }
@@ -47,77 +69,40 @@ namespace Testing
         [Test]
         public void TestIfEmployeeCantStartWorkingOnTheProjectStartStop()
         {
-            TimeSpan time = TimeSpan.FromHours(5);
-
             var emp = new Employee("petras", 160, 1);
 
             Assert.Throws<WorkingOnNotAssignProjectException>(
                          () => tracker.LogHours(emp, project, time, "heh"));
 
         }
-        [Test]
-        public void TestIfEmployeeCanLogHoursList()
-        {
-            mock = Substitute.For<ITracker>();
-
-            List<Project> projects = new List<Project>();
-            Project pro2 = new Project("tes2", "d", 50, employees);
-            projects.Add(project);
-            projects.Add(pro2);
-
-            List<TimeSpan> times = new List<TimeSpan>();
-            times.Add(new TimeSpan(3, 5, 15));
-            times.Add(new TimeSpan(8, 6, 3));
-
-            mock.LogHours(employee, projects, times, "lala");
-
-            mock.Received().LogHours(employee, projects, times, "lala");
-        }
 
         [Test]
-        public void TestIfNullListsInLogHoursMethod()
+        public void TestWhenNullListsInLogHoursMethod()
         {
             Assert.Throws<ArgumentNullException>(
                           () => tracker.LogHours(employee, null, null, "lala")); 
         }
 
-         [Test]
-         public void TestIfEmployeeWorkedMoreThenPossible()
-         {
-            mock = Substitute.For<ITracker>();
-
-            List<Project> projects = new List<Project>();
-            Project pro2 = new Project("tes2", "d", 50, employees);
-            projects.Add(project);
-            projects.Add(pro2);
-
-            List<TimeSpan> times = new List<TimeSpan>();
-            times.Add(new TimeSpan(15, 5, 15));
-            times.Add(new TimeSpan(8, 6, 3));
-
-
-            Assert.Throws<WorkedMoreThenPossibleDuringWorkdayException>(
-                          () => tracker.LogHours(employee, projects, times, "meh"));
-         }
+        [Test]
+        public void TestIfEmployeeWorkedMoreThenPossible()
+        {
+        Assert.Throws<WorkedMoreThenPossibleDuringWorkdayException>(
+                        () => tracker.LogHours(employee, projects, TimeListException, "meh"));
+        }
 
         [Test]
         public void TestIfEmployeeCanLogMultipleHours()
         {
             mock = Substitute.For<ITracker>();
 
-            List<Project> projects = new List<Project>();
-            Project pro2 = new Project("tes2", "d", 50, employees);
-            projects.Add(project);
-            projects.Add(pro2);
+            mock.CheckIfEmployeeCanWorkOnTheProject(employee, project).Returns(true);
+            mock.CheckIfEmployeeWorkedMoreThenPossible(TimeList).Returns(false);
 
-            List<TimeSpan> times = new List<TimeSpan>();
-            times.Add(new TimeSpan(2, 5, 15));
-            times.Add(new TimeSpan(8, 6, 3));
+            mock.LogHours(employee, projects, TimeList, "lala");
 
-
-            mock.LogHours(employee, projects, times, "meh");
-
-            mock.Received().LogHours(employee, projects, times, "meh");
+            mock.Received().LogHours(employee, projects, TimeList, "lala");
+            Assert.AreEqual(true, mock.CheckIfEmployeeCanWorkOnTheProject(employee, project));
+            Assert.AreEqual(false, mock.CheckIfEmployeeWorkedMoreThenPossible(TimeList));
         }
 
     }
