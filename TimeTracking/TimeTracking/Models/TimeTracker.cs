@@ -11,7 +11,7 @@ namespace TimeTracking.Models
     {
         //start - stop method
         public void LogHours(Employee employee, Project project, 
-                            TimeSpan hours, string description)
+                             TimeSpan time, string description)
         {        
             if (!CheckIfEmployeeCanWorkOnTheProject(employee, project))
             {
@@ -20,88 +20,104 @@ namespace TimeTracking.Models
             }       
             else
             {
-                //sukuriams commitas projektui 
-                Commit commit = new Commit(description, employee, hours);
+                //creating commit for a project
+                Commit commit = new Commit(description, employee, time);
                 project.Commits.Add(commit);
 
-                //laikas kiek isdirbta prie projekto
-                employee.TimeWorked = hours;     
-
-                //is projekto biudzeto nuskaiciuojama isdirbtos valandos
-                project.Budget -= hours;
-
-                //is darbuotojo biudzeto nuskaiciuojamos isdirbtos valandos
-                employee.Budget -= hours;
-                
+                //added time employee worked on current project
+                employee.TimeWorked = employee.TimeWorked.Add(time);              
             }   
         }
-        // kai galima kelis projektus vienu metu suvest
-        public void LogHours(Employee employee, List<Project> projects, 
-                            List<TimeSpan> hours, string description)
+
+        public void LogHours(List<Project> projects, List<Commit> commits)
         {
-            //ar project su timespan listai nera tusti
-            if(projects == null && hours == null)
+            //checking for empty lists
+            if (projects == null || commits == null || projects.Count != commits.Count)
             {
                 throw new ArgumentNullException();
             }
-            for (int i =0;i< projects.Count;i++)
+            for (int i = 0; i < projects.Count; i++)
             {
-                if (!CheckIfEmployeeCanWorkOnTheProject(employee, projects[i]))
+                if (!CheckIfEmployeeCanWorkOnTheProject(commits[i].Employee, projects[i]))
                 {
                     throw new WorkingOnNotAssignProjectException();
                     //"Jūs negalite dirbti prie jums nepriskirto projekto";
                 }
-                else if(CheckIfEmployeeWorkedMoreThenPossible(hours))
+
+                else if (CheckIfEmployeeWorkedMoreThenPossible(commits))
                 {
                     throw new WorkedMoreThenPossibleDuringWorkdayException();
                     //"Jūs negalite per darbo dieną dirbti daugiau negu 16 val.!"
                 }
                 else
                 {
-                    //sukuriams commitas projektui 
-                    Commit commit = new Commit(description, employee, hours[i]);
-                    projects[i].Commits.Add(commit);
+                    //adding commit to a project
+                    projects[i].Commits.Add(commits[i]);
 
-                    //laikas kiek buvo dirbta per visa darbo diena prie skirtingu projektu
-                    var totalTime = new TimeSpan(hours.Sum(r => r.Ticks));
-
-                    //is projekto biudzeto nuskaiciuojama isdirbtos valandos
-                    projects[i].Budget -= hours[i];
-
-                    //is darbuotojo biudzeto nuskaiciuojamos isdirbtos valandos
-                    employee.Budget -= totalTime;
-
+                    // total time employee worked during month
+                    //galbut reik padaryt kas menesi sito nunulinima
+                    commits[i].Employee.TimeWorked = commits[i].Employee.TimeWorked.Add(commits[i].HoursWorked);
                 }
             }
         }
 
-        public bool CheckIfEmployeeWorkedMoreThenPossible(List<TimeSpan> hours)
+
+        public bool CheckIfEmployeeWorkedMoreThenPossible(List<Commit> commits)
         {
-            var totalTime = new TimeSpan(hours.Sum(r => r.Ticks));
-            if(totalTime > TimeSpan.FromHours(16))
+            //checking if employee worked more then 16h
+            TimeSpan totalTime = CalculateCommitsTime(commits);
+
+            if (totalTime > TimeSpan.FromHours(16))
             {
                 return true;
             }
+            
             return false;
         }
 
-        public bool CheckForEmployeeOvertime(Employee employee)
+        /// <summary>
+        /// checking if employee worked overtime
+        /// </summary>
+        /// <param name="employee">current employee</param>
+        /// <param name="commits">all commits</param>
+        /// <returns>whether employee worked overtime</returns>
+        public bool CheckForEmployeeOvertime(Employee employee, List<Commit> commits)
         {
-            //ar darbuotojas virsijo menesini numatyta dirbti valandu kieki
-            if (employee.Budget < TimeSpan.Zero)
+            var currentMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var monthCommits = GetAllCommitsBetweenDates(
+                                currentMonth, DateTime.Now, commits);
+
+            //sorting all desired employee commits
+            var sortedCommits = new List<Commit>();
+            foreach (var commit in monthCommits)
+            {
+                if (commit.Employee.FullName == employee.FullName)
+                {
+                    sortedCommits.Add(commit);
+                }
+            }
+            //calculating total work time of all commits
+            TimeSpan totaTtime = CalculateCommitsTime(sortedCommits);
+
+            // if employee exceeded monthly hours 
+            if (employee.Budget < totaTtime)
             {
                 return true;
             }
             else
                 return false;
         }
-
+        /// <summary>
+        /// checking whether employee can work on a project
+        /// </summary>
+        /// <param name="employee">employee trying to work</param>
+        /// <param name="project">project, employee trying to work </param>
+        /// <returns>whether employee can work on a project</returns>
         public bool CheckIfEmployeeCanWorkOnTheProject(Employee employee, Project project)
         {
-            //patikrinama ar darbuotojas yra zmoniu priskirtu dirbti prie projekto sarase
-            foreach(var emp in project.Employees)
+            foreach (var emp in project.Employees)
             {
-                if(emp.FullName == employee.FullName)
+                if (emp.FullName == employee.FullName)
                 {
                     return true;
                 }
@@ -111,11 +127,37 @@ namespace TimeTracking.Models
 
         public bool CheckIfProjectBudgetExceeded(Project project)
         {
-            //projekto biudzetas virsytas arba pilnai isnaudotas
-            if (project.Budget <= TimeSpan.Zero)
+            //calculating total time of all project commits
+            var totalTime = CalculateCommitsTime(project.Commits);
+
+            //project budget exceeded or equals to zero
+            if (project.Budget <= totalTime)
                 return true;
             else
                 return false;
+        }
+
+        private TimeSpan CalculateCommitsTime(List<Commit> commits)
+        {
+            TimeSpan totaTtime = TimeSpan.Zero;
+            foreach (Commit commit in commits)
+            {
+                totaTtime = totaTtime.Add(commit.HoursWorked);
+            }
+            return totaTtime;
+        }
+
+        private List<Commit> GetAllCommitsBetweenDates(DateTime from, DateTime to, List<Commit> commits)
+        {
+            var sortedCommits = new List<Commit>();
+            foreach (var commit in commits)
+            {
+                if (commit.CommitDate >= from && commit.CommitDate <= to)
+                {
+                    sortedCommits.Add(commit);
+                }
+            }
+            return sortedCommits;
         }
     }
 }

@@ -20,5 +20,7 @@ namespace TimeTracking.Models
             HoursWorked = hoursWorked;
         }
 
+       
+
     }
 }

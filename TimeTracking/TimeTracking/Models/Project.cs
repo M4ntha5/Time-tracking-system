@@ -14,6 +14,7 @@ namespace TimeTracking.Models
         public List<Employee> Employees { get; set; }   //projektas gali turet daug emp
         public List<Commit> Commits { get; set; }       //cia bus laikomi visi commitai siam projektui
 
+
         public Project(string name, string description, double budget, List<Employee> employees)
         {
             Name = name;

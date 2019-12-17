@@ -9,37 +9,39 @@ namespace TimeTracking.Models
 {
     public class Reporter : IReporter
     {
-        public List<Project> SortProjects(DateTime? dateFrom, DateTime? dateTo, List<Project> projects)
+        public List<Project> SortProjects(DateTime dateFrom, DateTime dateTo, List<Project> projects)
         {
             List<Project> sortedProjects = new List<Project>();
-            if (dateFrom == null)
+            foreach (Project project in projects)
             {
-                foreach (Project project in projects)
+                if (project.DateCreated >= dateFrom && project.DateCreated <= dateTo)
                 {
-                    if (project.DateCreated <= dateTo)
-                    {
-                        sortedProjects.Add(project);
-                    }
+                    sortedProjects.Add(project);
                 }
-            }
-            else if (dateTo == null)
+            }         
+            return sortedProjects;
+        }
+
+        public List<Project> SortProjectsFrom(DateTime dateFrom, List<Project> projects)
+        {
+            List<Project> sortedProjects = new List<Project>();
+            foreach (Project project in projects)
             {
-                foreach (Project project in projects)
+                if (project.DateCreated >= dateFrom)
                 {
-                    if (project.DateCreated >= dateFrom)
-                    {
-                        sortedProjects.Add(project);
-                    }
+                    sortedProjects.Add(project);
                 }
-            }
-            else
+            }       
+            return sortedProjects;
+        }
+        public List<Project> SortProjectsTo(DateTime dateTo, List<Project> projects)
+        {
+            List<Project> sortedProjects = new List<Project>();
+            foreach (Project project in projects)
             {
-                foreach (Project project in projects)
+                if (project.DateCreated <= dateTo)
                 {
-                    if (project.DateCreated >= dateFrom && project.DateCreated <= dateTo)
-                    {
-                        sortedProjects.Add(project);
-                    }
+                    sortedProjects.Add(project);
                 }
             }
             return sortedProjects;
