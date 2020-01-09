@@ -11,7 +11,7 @@ namespace TimeTracking.Models
         public string ProjectName { get; set; }        
         public string ProjectDescription { get; set; }
         public DateTime DateCreated { get; set; }
-        public List<Employee> Employee { get; set; } // project empl
+        public List<Employee> Employee { get; set; }  // all project employees
         public List<Commit> Commits { get; set; }
 
         public Report(Project project, string projectName, string projectDescription, 

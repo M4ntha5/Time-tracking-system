@@ -21,10 +21,10 @@ namespace TimeTracking.Models
             List<Project> sortedProjects = new List<Project>();
             foreach (Project project in projects)
             {
-                if (project.DateCreated >= dateFrom && project.DateCreated <= dateTo)
+               /* if (project.DateCreated >= dateFrom && project.DateCreated <= dateTo)
                 {
                     sortedProjects.Add(project);
-                }
+                }*/
             }         
             return sortedProjects;
         }
@@ -39,10 +39,10 @@ namespace TimeTracking.Models
             List<Project> sortedProjects = new List<Project>();
             foreach (Project project in projects)
             {
-                if (project.DateCreated >= dateFrom)
+                /*if (project.DateCreated >= dateFrom)
                 {
                     sortedProjects.Add(project);
-                }
+                }*/
             }       
             return sortedProjects;
         }
@@ -57,10 +57,10 @@ namespace TimeTracking.Models
             List<Project> sortedProjects = new List<Project>();
             foreach (Project project in projects)
             {
-                if (project.DateCreated <= dateTo)
+                /*if (project.DateCreated <= dateTo)
                 {
                     sortedProjects.Add(project);
-                }
+                }*/
             }
             return sortedProjects;
         }
@@ -107,29 +107,30 @@ namespace TimeTracking.Models
         /*
          * optional????
          * ar uztenka tik project,
-         *  nes reportas gaunasi kaip ir tas pats kaip projektas
+         * nes reportas gaunasi kaip ir tas pats kaip projektas
          */
-        public Report GetProjectDetails(Project project, Employee employee)
+        public Project GetProjectDetails(Project project, Employee employee)
         {
+            //only manager can access project details
             if(!CanEmployeeAccessReports(employee))
             {
                 throw new CantAccessReportsException();
             }
 
-            Report report = new Report(
+            /*Report report = new Report(
                 project, project.Name, project.Description,
                 project.DateCreated, project.Employees, project.Commits
-            );
+            );*/
 
-            return report;
+            return project;
         }
 
         public bool CanEmployeeAccessReports(Employee employee)
         {
             if (employee.Role == 2)
-                return true;
-            else 
-                return false;
+                return true; 
+
+            return false;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace TimeTracking.Models.Interfaces
         List<Project> SortProjects(List<Project> projects, DateTime dateFrom);
         List<Project> SortProjects(Employee employee, List<Project> projects);
         List<Project> SortProjects(Project project, List<Project> projects);
-        Report GetProjectDetails(Project project, Employee employee);
+        Project GetProjectDetails(Project project, Employee employee);
         bool CanEmployeeAccessReports(Employee employee);
     }
 }

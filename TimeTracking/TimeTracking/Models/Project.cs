@@ -2,27 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CodeMash.Client;
+using CodeMash.Models;
+using CodeMash.Repository;
+using MongoDB.Driver;
+using CodeMash.Project.Services;
+using Isidos.CodeMash.ServiceContracts;
 
 namespace TimeTracking.Models
 {
-    public class Project
+    [CollectionName("Projects")]
+    public class Project : Entity
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public TimeSpan Budget { get; set; }            //valandom tarkim 40 
+        public double Budget { get; set; }            //project budget in hours
         public DateTime DateCreated { get; set; }
-        public List<Employee> Employees { get; set; }   //projektas gali turet daug emp
-        public List<Commit> Commits { get; set; }       //cia bus laikomi visi commitai siam projektui
+        public List<Employee> Employees { get; set; }
+        public List<string> Employees_ids { get; set; }
+        public List<Commit> Commits { get; set; }       //all project commits
+        public List<string> Commits_ids { get; set; }
 
 
-        public Project(string name, string description, double budget, List<Employee> employees)
+        public Project(string name, string description, double budget, List<string> employees)
         {
             Name = name;
             Description = description;
-            Budget = TimeSpan.FromHours(budget);
-            DateCreated = DateTime.Now;
-            Employees = employees;
+            Budget = budget;
             Commits = new List<Commit>();
+            Employees_ids = employees;
         }
     }
 }
