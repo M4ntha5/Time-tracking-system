@@ -14,7 +14,7 @@ namespace TimeTracking.Models
 {
     public class Database
     {
-        private CodeMashClient connect()
+        public CodeMashClient Connect()
         {
             // 1. Get your Project ID and Secret Key
             var projectId = Guid.Parse(Environment.GetEnvironmentVariable("projectId"));
@@ -27,7 +27,7 @@ namespace TimeTracking.Models
         }
         public async void GetAllEmployees()
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Employee>(client);
 
@@ -35,12 +35,12 @@ namespace TimeTracking.Models
             var employees = await service.FindAsync(
                 x => true,
                 new DatabaseFindOptions()
-            );        
+            );
         }
 
         public async void GetAllProjects()
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Project>(client);
 
@@ -53,7 +53,7 @@ namespace TimeTracking.Models
 
         public async void GetAllCommits()
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Commit>(client);
 
@@ -64,22 +64,37 @@ namespace TimeTracking.Models
             );
         }
 
-        public async void GetEmployeeById(string id)
+        public DatabaseFindOneResponse<Employee> GetEmployeeById(string id)
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Employee>(client);
 
             // 4. Call an API method
-            var employee = await service.FindOneByIdAsync(
+            var employee = service.FindOneById(
                 id,
                 new DatabaseFindOneOptions()
             );
+            return employee;
+        }
+
+        public DatabaseFindOneResponse<Project> GetProjectById(string id)
+        {
+            var client = Connect();
+            // 3. Create a service object
+            var service = new CodeMashRepository<Project>(client);
+
+            // 4. Call an API method
+            var project = service.FindOneById(
+                id,
+                new DatabaseFindOneOptions()
+            );
+            return project;
         }
 
         public async void GetCommitById(string id)
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Commit>(client);
 
@@ -92,7 +107,7 @@ namespace TimeTracking.Models
 
         public async void DeleteCommitById(string id)
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Commit>(client);
 
@@ -104,9 +119,9 @@ namespace TimeTracking.Models
 
         public async void DeleteEmployeeById(string id)
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
-            var service = new CodeMashRepository<emp>(client);
+            var service = new CodeMashRepository<Employee>(client);
 
             // 4. Call an API method
             await service.DeleteOneAsync(
@@ -116,7 +131,7 @@ namespace TimeTracking.Models
 
         public async void DeleteProjectById(string id)
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Project>(client);
 
@@ -125,20 +140,33 @@ namespace TimeTracking.Models
                 x => x.Id == id
             );
         }
-        public async void InsertCommit(Commit commit)
+        public void InsertCommit(Commit commit)
         {
-            var client = connect();
+            var client = Connect();
             // 3. Create a service object
             var service = new CodeMashRepository<Commit>(client);
 
-            //var commit = new Commit("desc", "5e1488a732bc640001bbb25e", 2);
+            // 4. Call an API method
+            service.InsertOne(commit, new DatabaseInsertOneOptions());
+        }
+        public void InsertEmployee(Employee employee)
+        {
+            var client = Connect();
+            // 3. Create a service object
+            var service = new CodeMashRepository<Employee>(client);
 
             // 4. Call an API method
-
-            await service.InsertOneAsync(commit, new DatabaseInsertOneOptions());
+            service.InsertOne(employee, new DatabaseInsertOneOptions());
         }
 
+        public void InsertProject(Project project)
+        {
+            var client = Connect();
+            // 3. Create a service object
+            var service = new CodeMashRepository<Project>(client);
 
+            // 4. Call an API method
+            service.InsertOne(project, new DatabaseInsertOneOptions());
+        }
     }
-    
 }

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TimeTracking.Models;
+using TimeTracking.Models.Interfaces;
 
 namespace TimeTracking
 {
@@ -16,9 +18,13 @@ namespace TimeTracking
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Environment.SetEnvironmentVariable("projectId", "f5e102ab-db85-41ad-8f7e-c4d414948ce6");
+            Environment.SetEnvironmentVariable("apiKey", "RbJEZdTWLUE5EPkfWXJ5sUp1uM5IJYAd");
+
+
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

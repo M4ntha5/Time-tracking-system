@@ -7,7 +7,7 @@ using TimeTracking.Models.Exceptions;
 
 namespace TimeTracking.Models
 {
-    public class Reporter : IReporter
+    public class Reporter //: IReporter
     {
         /// <summary>
         /// Sort all projects between selected dates
@@ -16,15 +16,15 @@ namespace TimeTracking.Models
         /// <param name="dateTo">Date to</param>
         /// <param name="projects">All projects</param>
         /// <returns>Sorted projects between selected dates</returns>
-        public List<Project> SortProjects(DateTime dateFrom, DateTime dateTo, List<Project> projects)
+       /* public List<Project> SortProjects(DateTime dateFrom, DateTime dateTo, List<Project> projects)
         {
             List<Project> sortedProjects = new List<Project>();
             foreach (Project project in projects)
             {
-               /* if (project.DateCreated >= dateFrom && project.DateCreated <= dateTo)
+                if (project.DateCreated >= dateFrom && project.DateCreated <= dateTo)
                 {
                     sortedProjects.Add(project);
-                }*/
+                }
             }         
             return sortedProjects;
         }
@@ -39,10 +39,10 @@ namespace TimeTracking.Models
             List<Project> sortedProjects = new List<Project>();
             foreach (Project project in projects)
             {
-                /*if (project.DateCreated >= dateFrom)
+                if (project.DateCreated >= dateFrom)
                 {
                     sortedProjects.Add(project);
-                }*/
+                }
             }       
             return sortedProjects;
         }
@@ -57,10 +57,10 @@ namespace TimeTracking.Models
             List<Project> sortedProjects = new List<Project>();
             foreach (Project project in projects)
             {
-                /*if (project.DateCreated <= dateTo)
+                if (project.DateCreated <= dateTo)
                 {
                     sortedProjects.Add(project);
-                }*/
+                }
             }
             return sortedProjects;
         }
@@ -77,11 +77,11 @@ namespace TimeTracking.Models
             {
                 foreach(var emp in project.Employees)
                 {
-                    if (emp.FullName == employee.FullName)
+                  /*  if (emp.FullName == employee.FullName)
                     {
                         sortedProjects.Add(project);
                     }
-                }       
+                }      
             }
             return sortedProjects;
         }
@@ -108,7 +108,7 @@ namespace TimeTracking.Models
          * optional????
          * ar uztenka tik project,
          * nes reportas gaunasi kaip ir tas pats kaip projektas
-         */
+         
         public Project GetProjectDetails(Project project, Employee employee)
         {
             //only manager can access project details
@@ -120,7 +120,7 @@ namespace TimeTracking.Models
             /*Report report = new Report(
                 project, project.Name, project.Description,
                 project.DateCreated, project.Employees, project.Commits
-            );*/
+            );
 
             return project;
         }
@@ -131,6 +131,6 @@ namespace TimeTracking.Models
                 return true; 
 
             return false;
-        }
+        }*/
     }
 }

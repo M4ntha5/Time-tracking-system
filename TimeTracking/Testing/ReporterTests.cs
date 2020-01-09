@@ -10,7 +10,7 @@ namespace Testing
 {
     class ReporterTests
     {
-        Employee employee;
+       /* Employee employee;
         Employee employee2;
         
         Project project;
@@ -100,7 +100,7 @@ namespace Testing
             mock.SortProjects(project, projects);
 
             mock.Received().SortProjects(project, projects);
-        }
+        }*/
 
     }
 }

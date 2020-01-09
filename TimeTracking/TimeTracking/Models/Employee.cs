@@ -19,7 +19,7 @@ namespace TimeTracking.Models
         /*
         * !!!!!!!This atribute must be set to 0 every 1st day of the month!!!!!!!!!!
         */
-        public TimeSpan TimeWorked { get; set; } //employee actual work time during month
+        public double TimeWorked { get; set; } //employee actual work time during month
         public int Budget { get; set; } //monthly budget in hours (160h when full time)   
 
 
@@ -29,6 +29,8 @@ namespace TimeTracking.Models
             Budget = budget;
             Role = role;
         }
+        public Employee()
+        { }
         
 
 

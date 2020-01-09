@@ -4,21 +4,34 @@ using System.Linq;
 using System.Threading.Tasks;
 using TimeTracking.Models.Interfaces;
 using TimeTracking.Models.Exceptions;
+using CodeMash.Client;
+using CodeMash.Models;
+using CodeMash.Repository;
+using MongoDB.Driver;
+using MongoDB.Bson;
+using CodeMash.Project.Services;
+using Isidos.CodeMash.ServiceContracts;
+using TimeTracking.Models;
+using Microsoft.Extensions.Configuration;
+
 
 namespace TimeTracking.Models
 {
     public class TimeTracker : ITracker
     {
         private INotifier notifier;
+        Database db = new Database();
         public TimeTracker(INotifier notifier)
         {
             this.notifier = notifier;
         }
 
         //start - stop method
-        public void LogHours(Employee employee, Project project, 
+        public void LogHours(DatabaseFindOneResponse<Employee> employee,
+                             DatabaseFindOneResponse<Project> project, 
                              TimeSpan time, string description)
-        {        
+        {
+            
             if (!CheckIfEmployeeCanWorkOnTheProject(employee, project))
             {
                 throw new WorkingOnNotAssignProjectException();
@@ -26,19 +39,22 @@ namespace TimeTracking.Models
             else
             {
                 //creating commit for a project
-                Commit commit = new Commit(description, employee, time);
-
-                project.Commits.Add(commit);
-
-                //added time employee worked on current project
-                employee.TimeWorked = employee.TimeWorked.Add(time);    
+                Commit commit = new Commit(description, employee.Result.Id, Math.Round(time.TotalHours,2));
+                //adding commit to db
+                db.InsertCommit(commit);
+                //cia neatsinaujina commit.id tad neina sito commito iterpt prie projekto
+                project.Result.Commits_ids.Add(commit.Id);
+                //cia reikia update project daryt
+                
+                //adding time employee worked on current project
+                employee.Result.TimeWorked = employee.Result.TimeWorked + Math.Round(time.TotalHours, 2);    
                 
                 if(notifier.CheckForEmployeeOvertime(employee))
                 {
-                    var message = "Jus dirbote virsvalandzius";
+                    var message = "Jus dirbote viršvalandžius";
                 }
-
-            }  
+                
+            }
         }
         //multiple projects - multiple hours method
         public void LogHours(List<Project> projects, List<Commit> commits)
@@ -54,6 +70,7 @@ namespace TimeTracking.Models
             }
             for (int i = 0; i < projects.Count; i++)
             {
+                //pagalvot kaip cia su situ daryt
                 if (!CheckIfEmployeeCanWorkOnTheProject(commits[i].Employee, projects[i]))
                 {
                     throw new WorkingOnNotAssignProjectException();
@@ -65,14 +82,15 @@ namespace TimeTracking.Models
                 }
                 else
                 {
+                    //inserting every commit to db
+                    db.InsertCommit(commits[i]);
                     //adding commit to a project
                     projects[i].Commits.Add(commits[i]);
 
-                    var timeWorked = TimeSpan.FromHours(commits[i].TimeWorked);
 
                     // total time employee worked during month
-                    commits[i].Employee.TimeWorked = 
-                        commits[i].Employee.TimeWorked.Add(timeWorked);
+                    commits[i].Employee.Result.TimeWorked = 
+                        commits[i].Employee.Result.TimeWorked + Math.Round(commits[i].TimeWorked);
                 }
             }
         }
@@ -80,7 +98,7 @@ namespace TimeTracking.Models
         public bool CheckIfEmployeeWorkedMoreThenPossible(List<Commit> commits)
         {
             //checking if employee worked more then 16h
-            TimeSpan totalTime = CalculateCommitsTime(commits);
+            TimeSpan totalTime = TimeSpan.FromHours(CalculateCommitsTime(commits));
 
             if (totalTime > TimeSpan.FromHours(16))
             {
@@ -94,16 +112,13 @@ namespace TimeTracking.Models
         /// </summary>
         /// <param name="employee">current employee</param>
         /// <returns>whether employee worked overtime</returns>
-        public bool CheckForEmployeeOvertime(Employee employee)
+        public bool CheckForEmployeeOvertime(DatabaseFindOneResponse<Employee> employee)
         {
             //calculating total work time of all employee commits
-            var totaTtime = employee.TimeWorked;
-
-            //converting double type to timespan
-            var employeeBudget = TimeSpan.FromHours(employee.Budget);
+            var totaTtime = employee.Result.TimeWorked;
 
             // if employee exceeded monthly hours 
-            if (employeeBudget < totaTtime)
+            if (employee.Result.Budget < totaTtime)
             {
                 return true;
             }
@@ -116,38 +131,49 @@ namespace TimeTracking.Models
         /// <param name="employee">employee trying to work</param>
         /// <param name="project">project, employee trying to work </param>
         /// <returns>whether employee can work on a project</returns>
-        public bool CheckIfEmployeeCanWorkOnTheProject(Employee employee, Project project)
+        public bool CheckIfEmployeeCanWorkOnTheProject(
+                                    DatabaseFindOneResponse<Employee> employee,
+                                    DatabaseFindOneResponse<Project> project)
         {
-            foreach (var emp in project.Employees)
+            foreach (var emp_id in project.Result.Employees_ids)
             {
-                if (emp.Id == employee.Id)
+                if (emp_id == employee.Result.Id)
                 {
                     return true;
                 }
             }
+            
+            return false;
+        }
+        public bool CheckIfEmployeeCanWorkOnTheProject(Employee employee, Project project)
+        {
+            foreach (var emp_id in project.Employees_ids)
+            {
+                if (emp_id == employee.Id)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
         public bool CheckIfProjectBudgetExceeded(Project project)
         {
             //calculating total time of all project commits
             var totalTime = CalculateCommitsTime(project.Commits);
-            //converting double type to timespan
-            var projectBudget = TimeSpan.FromHours(project.Budget);
 
             //project budget exceeded or equals to zero
-            if (projectBudget <= totalTime)
+            if (project.Budget <= totalTime)
                 return true;
-
+                
             return false;
         }
-        private TimeSpan CalculateCommitsTime(List<Commit> commits)
+        private double CalculateCommitsTime(List<Commit> commits)
         {
-            TimeSpan totaTtime = TimeSpan.Zero;
-            foreach (Commit commit in commits)
+            double totaTtime = 0;
+            foreach (var commit in commits)
             {
-                //converting double type to timespan
-                var timeWorked = TimeSpan.FromHours(commit.TimeWorked);
-                totaTtime = totaTtime.Add(timeWorked);
+                totaTtime = totaTtime + commit.TimeWorked;
             }
             return totaTtime;
         }
